@@ -1,11 +1,11 @@
-import pyaudio
+# import pyaudio
 
-p = pyaudio.PyAudio()
-info = p.get_host_api_info_by_index(0)
-numdevices = info.get('deviceCount')
-for i in range(0, numdevices):
-    if (p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
-        print("Input Device id ", i, " - ", p.get_device_info_by_host_api_device_index(0, i).get('name'))
+# p = pyaudio.PyAudio()
+# info = p.get_host_api_info_by_index(0)
+# numdevices = info.get('deviceCount')
+# for i in range(0, numdevices):
+#     if (p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
+#         print("Input Device id ", i, " - ", p.get_device_info_by_host_api_device_index(0, i).get('name'))
 
 # import pyaudio
 
@@ -36,21 +36,35 @@ for i in range(0, numdevices):
 
 import pyaudio
 import wave
+p = pyaudio.PyAudio()
+info = p.get_host_api_info_by_index(0)
+numdevices = info.get('deviceCount')
 
+DEVICE_NAME = "scala_mic_i2c_sw_vol"
 CHUNK = 1024
-FORMAT = pyaudio.paInt16
-CHANNELS = 2
+FORMAT = pyaudio.paInt32
+CHANNELS = 1
 RATE = 44100
-DEVICE_IDX = 0
 RECORD_SECONDS = 5
 WAVE_OUTPUT_FILENAME = "voice.wav"
 
-p = pyaudio.PyAudio()
+input_device_index = -1
+
+for i in range(0, numdevices):
+  if(p.get_device_info_by_host_api_device_index(0,i).get('maxInputChannels')):
+    if (p.get_device_info_by_host_api_device_index(0, i).get('name') == DEVICE_NAME):
+      input_device_index = i    
+
+print(DEVICE_NAME, "found on device id:", input_device_index)
+
+if (input_device_index < 0):
+  print("Device not found, make sure it's connected")
+  exit(1)
 
 stream = p.open(format=FORMAT,
                 channels=CHANNELS,
                 rate=RATE,
-                input_device_index=DEVICE_IDX,
+                input_device_index=input_device_index,
                 input=True,
                 frames_per_buffer=CHUNK)
 
