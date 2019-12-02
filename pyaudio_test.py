@@ -88,3 +88,16 @@ wf.setsampwidth(p.get_sample_size(FORMAT))
 wf.setframerate(RATE)
 wf.writeframes(b''.join(frames))
 wf.close()
+
+print("Now sleeping...")
+import time
+time.sleep(5)
+print("Now playing...")
+
+from subprocess import Popen, PIPE
+#subprocess.call(["play", "-v", self.volume, file])
+# subprocess.call(["aplay", WAVE_OUTPUT_FILENAME])
+#amazon polly returns mpg, in test we have wav
+process = Popen(["aplay", WAVE_OUTPUT_FILENAME], stdout=PIPE, stderr=PIPE)
+# process = Popen(["mpg123", WAVE_OUTPUT_FILENAME], stdout=PIPE, stderr=PIPE)
+process.wait()
